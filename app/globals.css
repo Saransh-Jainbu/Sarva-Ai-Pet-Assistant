@@ -1,0 +1,112 @@
+@import "tailwindcss";
+
+/* ---- Minimalistic, calm theme tokens ---- */
+@theme {
+  --color-bg: #f6f5f1;
+  --color-surface: #ffffff;
+  --color-surface-2: #f0eee9;
+  --color-ink: #2b2a27;
+  --color-ink-soft: #6f6b63;
+  --color-line: #e6e3dc;
+  --color-accent: #7c6cf0;
+  --color-accent-soft: #e9e6fd;
+  --color-mint: #4cc6a0;
+  --color-amber: #e8a33d;
+  --color-rose: #e76a6a;
+
+  --font-sans: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto,
+    Helvetica, Arial, sans-serif;
+  --font-pixel: "Press Start 2P", ui-monospace, "Cascadia Mono", Menlo,
+    Consolas, monospace;
+
+  --radius-xl: 22px;
+}
+
+:root {
+  color-scheme: light;
+}
+
+html,
+body {
+  height: 100%;
+}
+
+body {
+  background:
+    radial-gradient(1100px 700px at 78% -8%, var(--color-accent-soft), transparent 60%),
+    radial-gradient(900px 600px at -10% 110%, #e4f6ef, transparent 55%),
+    var(--color-bg);
+  color: var(--color-ink);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+/* Crisp pixel rendering for the canvas pet sprite */
+.pixelated {
+  image-rendering: pixelated;
+  image-rendering: crisp-edges;
+}
+
+/* Thin, unobtrusive scrollbars to keep the minimalistic feel */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-line) transparent;
+}
+*::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+*::-webkit-scrollbar-thumb {
+  background: var(--color-line);
+  border-radius: 999px;
+}
+
+@keyframes floaty {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-6px); }
+}
+.animate-floaty {
+  animation: floaty 4s ease-in-out infinite;
+}
+
+/* ---- Landing page motion ---- */
+@keyframes blob {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  33% { transform: translate(24px, -18px) scale(1.06); }
+  66% { transform: translate(-18px, 14px) scale(0.96); }
+}
+.animate-blob { animation: blob 14s ease-in-out infinite; }
+
+@keyframes twinkle {
+  0%, 100% { opacity: 0.25; transform: scale(0.85); }
+  50% { opacity: 1; transform: scale(1.15); }
+}
+.animate-twinkle { animation: twinkle 3s ease-in-out infinite; }
+
+@keyframes rise {
+  from { opacity: 0; transform: translateY(16px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.animate-rise { animation: rise 0.7s cubic-bezier(0.22, 1, 0.36, 1) both; }
+
+@keyframes shimmer {
+  to { background-position: 200% center; }
+}
+.text-shimmer {
+  background: linear-gradient(
+    100deg,
+    var(--color-accent) 0%,
+    var(--color-mint) 35%,
+    var(--color-accent) 70%
+  );
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: shimmer 6s linear infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-blob, .animate-twinkle, .animate-floaty, .text-shimmer { animation: none; }
+}

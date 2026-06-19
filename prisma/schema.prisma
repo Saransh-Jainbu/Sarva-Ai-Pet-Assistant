@@ -1,0 +1,150 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+/// An authenticated user (Google sign-in via Auth.js). Each user's data is fully
+/// isolated. Auth fields (email/image/emailVerified) are managed by the adapter.
+model User {
+  id            String    @id @default(cuid())
+  name          String?
+  email         String?   @unique
+  emailVerified DateTime?
+  image         String?
+  createdAt     DateTime  @default(now())
+
+  accounts Account[]
+  sessions Session[]
+
+  pet       PetState?
+  notes     Note[]
+  documents Document[]
+  bills     Bill[]
+  reminders Reminder[]
+  messages  ChatMessage[]
+}
+
+/// OAuth provider account link (Auth.js standard).
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.Text
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
+/// One row per signed-in session (Auth.js database session strategy).
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+}
+
+/// Persisted pet personality + mood so it feels continuous across sessions.
+model PetState {
+  id       String   @id @default(cuid())
+  userId   String   @unique
+  user     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  name     String   @default("Sarva")
+  mood     String   @default("idle")
+  energy   Int      @default(80)
+  lastSeen DateTime @default(now())
+}
+
+/// Pet memory: the running conversation.
+model ChatMessage {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  role      String // "user" | "assistant" | "system" | "tool"
+  content   String
+  createdAt DateTime @default(now())
+
+  @@index([userId, createdAt])
+}
+
+model Note {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  title     String   @default("Note")
+  body      String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId, createdAt])
+}
+
+model Document {
+  id              String   @id @default(cuid())
+  userId          String
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  filename        String
+  localPath       String
+  mimeType        String   @default("application/pdf")
+  parsedText      String   @default("")
+  summary         String   @default("")
+  actionableSteps String   @default("")
+  createdAt       DateTime @default(now())
+
+  bills Bill[]
+
+  @@index([userId, createdAt])
+}
+
+model Bill {
+  id         String    @id @default(cuid())
+  userId     String
+  user       User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  vendor     String
+  amount     Float?
+  currency   String    @default("INR")
+  dueDate    DateTime?
+  status     String    @default("unpaid") // "unpaid" | "paid"
+  documentId String?
+  document   Document? @relation(fields: [documentId], references: [id], onDelete: SetNull)
+  createdAt  DateTime  @default(now())
+
+  reminders Reminder[]
+
+  @@index([userId, dueDate])
+}
+
+model Reminder {
+  id            String    @id @default(cuid())
+  userId        String
+  user          User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  text          String
+  dueAt         DateTime?
+  done          Boolean   @default(false)
+  relatedBillId String?
+  relatedBill   Bill?     @relation(fields: [relatedBillId], references: [id], onDelete: SetNull)
+  createdAt     DateTime  @default(now())
+
+  @@index([userId, dueAt])
+}
