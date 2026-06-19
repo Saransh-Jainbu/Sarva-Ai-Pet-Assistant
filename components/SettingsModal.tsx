@@ -19,6 +19,8 @@ export default function SettingsModal({
   const [value, setValue] = useState(name);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [clearing, setClearing] = useState(false);
+  const [showClearConfirm, setShowClearConfirm] = useState(false);
   const inputRef = useRef<HTMLInputElement | null>(null);
 
   // Sync the field to the current name each time the dialog opens.
@@ -74,6 +76,25 @@ export default function SettingsModal({
     }
   };
 
+  const clearHistory = async () => {
+    setClearing(true);
+    try {
+      const res = await fetch("/api/chat", { method: "DELETE" });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) {
+        setError(data.error || "Couldn't clear history. Try again?");
+        return;
+      }
+      say("Chat history cleared! Fresh start! ✨");
+      setTimeout(() => usePet.getState().say(null), 3000);
+      setShowClearConfirm(false);
+    } catch {
+      setError("Couldn't clear history. Try again?");
+    } finally {
+      setClearing(false);
+    }
+  };
+
   return (
     <div className="fixed inset-0 z-50 grid place-items-center p-4">
       {/* backdrop */}
@@ -117,6 +138,42 @@ export default function SettingsModal({
           />
           {error && <p className="mt-2 text-xs text-[var(--color-rose)]">{error}</p>}
         </div>
+
+        <div className="mt-6 border-t border-[var(--color-line)] pt-6">
+          <label className="text-xs font-semibold text-[var(--color-ink-soft)] block mb-3">
+            Chat History
+          </label>
+          <button
+            onClick={() => setShowClearConfirm(true)}
+            disabled={clearing}
+            className="w-full rounded-xl px-4 py-2.5 text-sm font-medium text-[var(--color-rose)] border border-[var(--color-rose)]/30 bg-[var(--color-rose)]/5 transition hover:bg-[var(--color-rose)]/10 disabled:opacity-50"
+          >
+            {clearing ? "Clearing..." : "Clear Chat History"}
+          </button>
+        </div>
+
+        {showClearConfirm && (
+          <div className="mt-4 p-4 rounded-xl bg-[var(--color-rose)]/10 border border-[var(--color-rose)]/30">
+            <p className="text-xs text-[var(--color-ink)] mb-3">
+              This will delete all chat messages. Your pet will start fresh with no memory of previous conversations.
+            </p>
+            <div className="flex gap-2">
+              <button
+                onClick={() => setShowClearConfirm(false)}
+                className="flex-1 rounded-lg px-3 py-2 text-xs font-medium text-[var(--color-ink-soft)] hover:bg-[var(--color-surface-2)] transition"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={() => void clearHistory()}
+                disabled={clearing}
+                className="flex-1 rounded-lg bg-[var(--color-rose)] text-white text-xs font-medium transition hover:opacity-90 disabled:opacity-50 py-2"
+              >
+                {clearing ? "Clearing..." : "Clear"}
+              </button>
+            </div>
+          </div>
+        )}
 
         <div className="mt-6 flex justify-end gap-2">
           <button

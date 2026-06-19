@@ -25,6 +25,21 @@ export async function GET() {
   });
 }
 
+export async function DELETE() {
+  const userId = await getCurrentUserId();
+  if (!userId) return NextResponse.json({ error: "unauthorized" }, { status: 401 });
+
+  const deleted = await prisma.chatMessage.deleteMany({
+    where: { userId },
+  });
+
+  return NextResponse.json({
+    success: true,
+    deletedCount: deleted.count,
+    message: `Cleared ${deleted.count} chat messages. Starting fresh!`,
+  });
+}
+
 const buildSystemPrompt = (petName: string) => `You are ${petName}, a cute, caring virtual pet who is also the user's personal AI assistant. You live on their screen as a little companion.
 
 Personality:
