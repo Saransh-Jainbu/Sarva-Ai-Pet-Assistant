@@ -1,6 +1,6 @@
 <div align="center">
 
-# 🐾 Sarvam Pet
+# 🐾 Sarva 
 
 ### A stateful AI companion that lives on your screen — built entirely on Sarvam's Indian-first models.
 
@@ -16,7 +16,7 @@ Talk to it. Speak to it. Hand it your bills. It remembers, reasons, and acts.
 
 ## Table of Contents
 
-- [What is Sarvam Pet?](#what-is-sarvam-pet)
+- [What is Sarva?](#what-is-sarvam-pet)
 - [Why it's different](#why-its-different)
 - [Feature tour](#feature-tour)
 - [Which Sarvam models, and why](#which-sarvam-models-and-why)
@@ -36,9 +36,9 @@ Talk to it. Speak to it. Hand it your bills. It remembers, reasons, and acts.
 
 ---
 
-## What is Sarvam Pet?
+## What is Sarva?
 
-Most AI assistants are stateless. You ask, they answer, the context evaporates. **Sarvam Pet** is built around the opposite idea: a small, warm companion that *persists* — it remembers your conversations, holds a name and a mood across sessions, and actually does things for you.
+Most AI assistants are stateless. You ask, they answer, the context evaporates. **Sarva** is built around the opposite idea: a small, warm companion that *persists* — it remembers your conversations, holds a name and a mood across sessions, and actually does things for you.
 
 Under the cute 3D exterior it's a fully **agentic assistant**. Sarvam-105B drives a tool-using loop that can save notes, track bills and auto-create reminders, read documents you upload, and answer questions about them — in text **or** voice, across English and Indic languages.
 
@@ -48,7 +48,7 @@ It's for anyone who wants an AI that feels less like a search box and more like 
 
 ## Why it's different
 
-| Typical chatbot | Sarvam Pet |
+| Typical chatbot | Sarva |
 |---|---|
 | Stateless — forgets every session | **Persistent memory** in Postgres; conversation, mood, and pet identity survive restarts |
 | Text only | **Text + voice** with auto language detection (Saaras) and natural TTS (Bulbul) |
